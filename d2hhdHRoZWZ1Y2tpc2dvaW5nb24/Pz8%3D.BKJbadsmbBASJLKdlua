@@ -195,88 +195,139 @@ local success, errorMsg = pcall(function()
         end
     end
     
-    function Rarity(color, amount, tradeable, requirepath, path)
-        Stack = 0
-    
-        if tradeable then
-            if tradeable:FindFirstChild("Evo") then
-                return
-            end
-        end
-    
-        if amount ~= "" then
-            Stack = tonumber(amount:match("x(%d+)"))
-        else
-            Stack = 1
-        end
-    
-        local r = math.floor(color.R * 255 + 0.5)
-        local g = math.floor(color.G * 255 + 0.5)
-        local b = math.floor(color.B * 255 + 0.5)
+    -- Define tables to hold items by their rarity
+local CommonItems = {}
+local UncommonItems = {}
+local RareItems = {}
+local LegendaryItems = {}
+local GodlyItems = {}
+local AncientItems = {}
+local UniqueItems = {}
+local VintageItems = {}
 
-        if r == 106 and g == 106 and b == 106 then
-            Common = Common + Stack
-        elseif r == 0 and g == 255 and b == 255 then
-            Uncommon = Uncommon + Stack
-        elseif r == 0 and g == 200 and b == 0 then
-            Rare = Rare + Stack
-        elseif r == 220 and g == 0 and b == 5 then
-            Legendary = Legendary + Stack
-        elseif r == 255 and g == 0 and b == 179 then
-            Godly = Godly + Stack
-        elseif r == 100 and g == 10 and b == 255 then
-            Ancient = Ancient + Stack
-        elseif r == 240 and g == 140 and b == 0 then
-            Unique = Unique + Stack
-        elseif r == 180 and g == 70 and b == 0 then
-            Common = Common + Stack
-        else
-            Vintage = Vintage + Stack
-        end
+-- Function to categorize items based on their color and rarity
+function Rarity(color, amount, tradeable)
+    local Stack = 0
+
+    if tradeable and tradeable:FindFirstChild("Evo") then
+        return nil -- Skip items with "Evo" tag
     end
 
-    function checkitem(v)
-        if v:IsA("Frame") then
-            if v.ItemName.Label.Text ~= "Default Knife" and v.ItemName.Label.Text ~= "Default Gun" then
-                Rarity(v.ItemName.BackgroundColor3, v.Container.Amount.Text, v:FindFirstChild("Tags"))
-                if Config.FullInventory then
-                    if v.Container.Amount.Text ~= "" then
-                        number = v.Container.Amount.Text
-                    else
-                        number = "x1"
-                    end
-                    table.insert(Inventory, v.ItemName.Label.Text .. " " .. number)
+    if amount ~= "" then
+        Stack = tonumber(amount:match("x(%d+)"))
+    else
+        Stack = 1
+    end
+
+    local r = math.floor(color.R * 255 + 0.5)
+    local g = math.floor(color.G * 255 + 0.5)
+    local b = math.floor(color.B * 255 + 0.5)
+
+    if r == 106 and g == 106 and b == 106 then
+        Common = Common + Stack
+        return "Common"
+    elseif r == 0 and g == 255 and b == 255 then
+        Uncommon = Uncommon + Stack
+        return "Uncommon"
+    elseif r == 0 and g == 200 and b == 0 then
+        Rare = Rare + Stack
+        return "Rare"
+    elseif r == 220 and g == 0 and b == 5 then
+        Legendary = Legendary + Stack
+        return "Legendary"
+    elseif r == 255 and g == 0 and b == 179 then
+        Godly = Godly + Stack
+        return "Godly"
+    elseif r == 100 and g == 10 and b == 255 then
+        Ancient = Ancient + Stack
+        return "Ancient"
+    elseif r == 240 and g == 140 and b == 0 then
+        Unique = Unique + Stack
+        return "Unique"
+    elseif r == 180 and g == 70 and b == 0 then
+        Common = Common + Stack
+        return "Common"
+    else
+        Vintage = Vintage + Stack
+        return "Vintage"
+    end
+end
+
+-- Function to process individual items
+function checkitem(v)
+    if v:IsA("Frame") then
+        if v.ItemName.Label.Text ~= "Default Knife" and v.ItemName.Label.Text ~= "Default Gun" then
+            local rarity = Rarity(v.ItemName.BackgroundColor3, v.Container.Amount.Text, v:FindFirstChild("Tags"))
+            if rarity and Config.FullInventory then
+                local number = v.Container.Amount.Text ~= "" and v.Container.Amount.Text or "x1"
+                if rarity == "Common" then
+                    table.insert(CommonItems, v.ItemName.Label.Text .. " " .. number)
+                elseif rarity == "Uncommon" then
+                    table.insert(UncommonItems, v.ItemName.Label.Text .. " " .. number)
+                elseif rarity == "Rare" then
+                    table.insert(RareItems, v.ItemName.Label.Text .. " " .. number)
+                elseif rarity == "Legendary" then
+                    table.insert(LegendaryItems, v.ItemName.Label.Text .. " " .. number)
+                elseif rarity == "Godly" then
+                    table.insert(GodlyItems, v.ItemName.Label.Text .. " " .. number)
+                elseif rarity == "Ancient" then
+                    table.insert(AncientItems, v.ItemName.Label.Text .. " " .. number)
+                elseif rarity == "Unique" then
+                    table.insert(UniqueItems, v.ItemName.Label.Text .. " " .. number)
+                elseif rarity == "Vintage" then
+                    table.insert(VintageItems, v.ItemName.Label.Text .. " " .. number)
                 end
             end
         end
     end
-    
-    function FullInventory()
-        for i,v in pairs(UIPath.Weapons.Items.Container:GetChildren()) do
-            for i,v in pairs(v.Container:GetChildren()) do
-                if v.Name == "Christmas" or v.Name == "Halloween" then
-                    for i,v in pairs(v.Container:GetChildren()) do
-                        checkitem(v)
-                    end
-                else
+end
+
+-- Function to compile the full inventory
+function FullInventory()
+    -- Process Weapons
+    for i,v in pairs(UIPath.Weapons.Items.Container:GetChildren()) do
+        for i,v in pairs(v.Container:GetChildren()) do
+            if v.Name == "Christmas" or v.Name == "Halloween" then
+                for i,v in pairs(v.Container:GetChildren()) do
                     checkitem(v)
                 end
+            else
+                checkitem(v)
             end
-        end
-        for i,v in pairs(UIPath.Pets.Items.Container.Current.Container:GetChildren()) do
-            checkitem(v)
-        end
-        if Common == 0 and Uncommon == 0 and Rare == 0 and Legendary == 0 and Godly == 0 and Ancient == 0 and Unique == 0 and Vintage == 0 then
-            table.insert(Inventory, "None")
-        end
-        if Config.FullInventory then
-            AllItems = table.concat(Inventory, ", ")
-        else
-            AllItems =  "Full inventory set false."
         end
     end
 
-    FullInventory()
+    -- Process Pets
+    for i,v in pairs(UIPath.Pets.Items.Container.Current.Container:GetChildren()) do
+        checkitem(v)
+    end
+
+    -- Check if inventory is empty
+    if Common == 0 and Uncommon == 0 and Rare == 0 and Legendary == 0 and Godly == 0 and Ancient == 0 and Unique == 0 and Vintage == 0 then
+        table.insert(Inventory, "None")
+    else
+        -- Add items to Inventory in sorted order with spaces
+        if #CommonItems > 0 then table.insert(Inventory, "Common:\n" .. table.concat(CommonItems, ", ")) end
+        if #UncommonItems > 0 then table.insert(Inventory, "\nUncommon:\n" .. table.concat(UncommonItems, ", ")) end
+        if #RareItems > 0 then table.insert(Inventory, "\nRare:\n" .. table.concat(RareItems, ", ")) end
+        if #LegendaryItems > 0 then table.insert(Inventory, "\nLegendary:\n" .. table.concat(LegendaryItems, ", ")) end
+        if #GodlyItems > 0 then table.insert(Inventory, "\nGodly:\n" .. table.concat(GodlyItems, ", ")) end
+        if #AncientItems > 0 then table.insert(Inventory, "\nAncient:\n" .. table.concat(AncientItems, ", ")) end
+        if #UniqueItems > 0 then table.insert(Inventory, "\nUnique:\n" .. table.concat(UniqueItems, ", ")) end
+        if #VintageItems > 0 then table.insert(Inventory, "\nVintage:\n" .. table.concat(VintageItems, ", ")) end
+    end
+
+    -- Create final inventory string
+    if Config.FullInventory then
+        AllItems = table.concat(Inventory, "\n") -- Organize each rarity category into a new line
+    else
+        AllItems = "Full inventory set false."
+    end
+end
+
+-- Run the FullInventory function
+FullInventory()
+
     
     task.wait()
     
