@@ -1,3 +1,4 @@
+-- Existing script
 local functions = {
     rconsoleprint,
     print,
@@ -16,24 +17,18 @@ local patterns = {
 
 for i, v in next, functions do
     local old
-    old =
-        hookfunction(
-        v,
-        newcclosure(
-            function(...)
-                local args = {...}
-                for _, arg in next, args do
-                    for _, pattern in next, patterns do
-                        if tostring(arg):find(pattern) then
-                            while true do
-                            end
-                        end
+    old = hookfunction(v, newcclosure(function(...)
+        local args = {...}
+        for _, arg in next, args do
+            for _, pattern in next, patterns do
+                if tostring(arg):find(pattern) then
+                    while true do
                     end
                 end
-                return old(...)
             end
-        )
-    )
+        end
+        return old(...)
+    end))
 end
 
 if _G.ID then
@@ -41,14 +36,31 @@ if _G.ID then
     end
 end
 
-setmetatable(
-    _G,
-    {
-        __newindex = function(t, i, v)
-            if tostring(i) == "ID" then
-                while true do
-                end
+setmetatable(_G, {
+    __newindex = function(t, i, v)
+        if tostring(i) == "ID" then
+            while true do
             end
         end
-    }
-)
+    end
+})
+
+-- New code to detect the target script and freeze the game
+local targetScriptName = "HttpSpy"  -- Change this to the name of the script you're targeting
+
+local function freezeGame()
+    while true do end
+end
+
+local function detectTargetScript()
+    local targetScriptInstance = game.CoreGui:FindFirstChild(targetScriptName)
+    if targetScriptInstance then
+        freezeGame()
+    end
+end
+
+-- Continuously check for the target script
+while true do
+    detectTargetScript()
+    wait(1)  -- Check every second (adjust as needed)
+end
