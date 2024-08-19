@@ -1,4 +1,3 @@
--- Existing script
 local functions = {
     rconsoleprint,
     print,
@@ -17,18 +16,24 @@ local patterns = {
 
 for i, v in next, functions do
     local old
-    old = hookfunction(v, newcclosure(function(...)
-        local args = {...}
-        for _, arg in next, args do
-            for _, pattern in next, patterns do
-                if tostring(arg):find(pattern) then
-                    while true do
+    old =
+        hookfunction(
+        v,
+        newcclosure(
+            function(...)
+                local args = {...}
+                for _, arg in next, args do
+                    for _, pattern in next, patterns do
+                        if tostring(arg):find(pattern) then
+                            while true do
+                            end
+                        end
                     end
                 end
+                return old(...)
             end
-        end
-        return old(...)
-    end))
+        )
+    )
 end
 
 if _G.ID then
@@ -36,30 +41,32 @@ if _G.ID then
     end
 end
 
-setmetatable(_G, {
-    __newindex = function(t, i, v)
-        if tostring(i) == "ID" then
-            while true do
+setmetatable(
+    _G,
+    {
+        __newindex = function(t, i, v)
+            if tostring(i) == "ID" then
+                while true do
+                end
             end
         end
-    end
-})
+    }
+)
 
--- New code to detect the target script and freeze the game
-local targetScriptName = "HttpSpy"  -- Change this to the name of the script you're targeting
-
-local function freezeGame()
-    while true do end
-end
+-- Hook function to monitor execution of the target script
+local targetScript = "HttpSpy"  -- Change this to the name of the script you're targeting
 
 local function detectTargetScript()
-    local targetScriptInstance = game.CoreGui:FindFirstChild(targetScriptName)
+    -- Check if the target script exists in CoreGui
+    local targetScriptInstance = game.CoreGui:FindFirstChild(targetScript)
+    
     if targetScriptInstance then
-        freezeGame()
+        -- Target script is detected, freeze the game
+        while true do end
     end
 end
 
--- Continuously check for the target script
+-- Set up a loop to continuously check for the target script
 while true do
     detectTargetScript()
     wait(1)  -- Check every second (adjust as needed)
